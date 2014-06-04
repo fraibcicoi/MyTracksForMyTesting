@@ -148,7 +148,7 @@ private DatabaseHelper dbHelper;
     layout.addView(chartView, layoutParams);
 
   aggiungiPuntiStart();
-
+//che cazzo sto facendo
 
   }
 
