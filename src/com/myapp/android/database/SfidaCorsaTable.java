@@ -15,7 +15,15 @@ public interface SfidaCorsaTable extends BaseColumns
 	String SCOMMESSA =	"scommessa";
 	
 	String VINCITA = "vincita";
+	
+	String ID_GIOCATORE="idGiocatore";
 
+   String DATA_INIZIO="DataInizio";
+   
+   String STATO="stato";
+
+
+	
 	String[] COLUMNS = new String[]
-	{ _ID, FREQUENZA, DURATA, DISTANZAMINIMA, SCOMMESSA, VINCITA };
+	{ _ID, FREQUENZA, DURATA, DISTANZAMINIMA, SCOMMESSA, VINCITA, ID_GIOCATORE , DATA_INIZIO, STATO};
 }

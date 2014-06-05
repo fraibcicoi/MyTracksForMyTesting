@@ -61,6 +61,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.maps.mytracks.BuildConfig;
 import com.google.android.maps.mytracks.R;
+import com.myapp.android.database.TemporaryData;
 
 import android.accounts.Account;
 import android.app.Dialog;
@@ -104,6 +105,8 @@ import java.util.Locale;
 public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
     implements EulaCaller, FileTypeCaller, PlayMultipleCaller, ChooseAccountCaller, ConfirmSyncCaller {
 
+  
+  private int idSfida;
   private static final String TAG = CorsaTrackListActivity.class.getSimpleName();
   private static final String[] PROJECTION = new String[] { TracksColumns._ID, TracksColumns.NAME,
       TracksColumns.DESCRIPTION, TracksColumns.CATEGORY, TracksColumns.STARTTIME,
@@ -201,8 +204,8 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
                 @Override
               public void run() {
                 ApiAdapterFactory.getApiAdapter().invalidMenu(CorsaTrackListActivity.this);
-                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
-                getSupportLoaderManager().restartLoader(1, null, loaderCallbacksTest);
+                getSupportLoaderManager().restartLoader(0, null, loaderCallbacksRiusciti);
+                getSupportLoaderManager().restartLoader(1, null, loaderCallbacksFalliti);
                 
                 boolean isRecording = recordingTrackId
                     != PreferencesUtils.RECORDING_TRACK_ID_DEFAULT;
@@ -279,12 +282,17 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
     public void onClick(View v) {
       AnalyticsUtils.sendPageViews(CorsaTrackListActivity.this, AnalyticsUtils.ACTION_STOP_RECORDING);
       updateMenuItems(false, false);
+      
+      
+         
+      
+      
       TrackRecordingServiceConnectionUtils.stopRecording(
           CorsaTrackListActivity.this, trackRecordingServiceConnection, true);
     }
   };
 
-  private final LoaderCallbacks<Cursor> loaderCallbacks = new LoaderCallbacks<Cursor>() {
+  private final LoaderCallbacks<Cursor> loaderCallbacksRiusciti = new LoaderCallbacks<Cursor>() {
       @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
      //   ProfiloTable.NICKNAME+"=? and "+ProfiloTable.PASSWORD+"=?", new String[] { username, password }
@@ -317,11 +325,14 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
   
   
   
-  private final LoaderCallbacks<Cursor> loaderCallbacksTest = new LoaderCallbacks<Cursor>() {
+  private final LoaderCallbacks<Cursor> loaderCallbacksFalliti = new LoaderCallbacks<Cursor>() {
     @Override
   public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
    //   ProfiloTable.NICKNAME+"=? and "+ProfiloTable.PASSWORD+"=?", new String[] { username, password }
-    return new CursorLoader(CorsaTrackListActivity.this, TracksColumns.CONTENT_URI, PROJECTION,TracksColumns._ID+"=24 OR "+TracksColumns._ID+"=25" ,null, TrackUtils.TRACK_SORT_ORDER);
+  
+   //   idSfida;
+      
+      return new CursorLoader(CorsaTrackListActivity.this, TracksColumns.CONTENT_URI, PROJECTION,TracksColumns._ID+"=24 OR "+TracksColumns._ID+"=25" ,null, TrackUtils.TRACK_SORT_ORDER);
   }
 
     @Override
@@ -526,8 +537,8 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
     ApiAdapterFactory.getApiAdapter()
         .configureListViewContextualMenu(this, listView, contextualActionModeCallback);
 
-    getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
-    getSupportLoaderManager().initLoader(1, null, loaderCallbacksTest);
+    getSupportLoaderManager().initLoader(0, null, loaderCallbacksRiusciti);
+    getSupportLoaderManager().initLoader(1, null, loaderCallbacksFalliti);
      
     showStartupDialogs();
   }
@@ -536,6 +547,10 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
   protected void onStart() {
     super.onStart();
 
+    Bundle sfida=getIntent().getExtras().getBundle("SFIDA");
+    idSfida=sfida.getInt("ID_SFIDA");
+    
+    
     // Register shared preferences listener
     sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
 
@@ -554,8 +569,8 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
     
     // Update UI
     ApiAdapterFactory.getApiAdapter().invalidMenu(this);
-    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
-    getSupportLoaderManager().restartLoader(1, null, loaderCallbacksTest);
+    getSupportLoaderManager().restartLoader(0, null, loaderCallbacksRiusciti);
+    getSupportLoaderManager().restartLoader(1, null, loaderCallbacksFalliti);
     
     boolean isRecording = recordingTrackId != PreferencesUtils.RECORDING_TRACK_ID_DEFAULT;
     trackController.onResume(isRecording, recordingTrackPaused);
@@ -880,6 +895,9 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
    * Starts a new recording.
    */
   private void startRecording() {
+    
+    inizializzaIDSfidaRecording();
+    
     startNewRecording = true;
     trackRecordingServiceConnection.startAndBind();
 
@@ -892,6 +910,14 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
     bindChangedCallback.run();
   }
 
+  
+  private void inizializzaIDSfidaRecording()
+  {
+    ((TemporaryData)getApplication()).setIDrecordingSfida(idSfida);
+  }
+  
+  
+  
   /**
    * Handles a context item selection.
    * 

@@ -105,6 +105,7 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
 
     myTracksProviderUtils = MyTracksProviderUtils.Factory.get(this);
     track = myTracksProviderUtils.getTrack(trackId);
+    
     if (track == null) {
       Log.e(TAG, "No track for " + trackId);
       finish();

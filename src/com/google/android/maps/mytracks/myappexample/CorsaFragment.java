@@ -24,6 +24,7 @@ package com.google.android.maps.mytracks.myappexample;
 
 import com.google.android.maps.mytracks.R;
 import com.myapp.android.database.DatabaseHelper;
+import com.myapp.android.database.TemporaryData;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -126,9 +127,10 @@ public class CorsaFragment extends Fragment{
 	{
 		
 		DatabaseHelper databaseHelper = new DatabaseHelper(getActivity());
-		databaseHelper.inserisciSfidaCorsa((int)frequenzaSpinner.getSelectedItemId(), (int)periodoSpinner.getSelectedItemId(), (int)distanzaSpinner.getSelectedItemId(),risultatoScommessa,scommessa);
+		int ID=((TemporaryData)(getActivity().getApplication())).getID();
+		databaseHelper.inserisciSfidaCorsa((int)frequenzaSpinner.getSelectedItemId(), (int)periodoSpinner.getSelectedItemId(), (int)distanzaSpinner.getSelectedItemId(),risultatoScommessa,scommessa,ID);
 	
-		Cursor c = databaseHelper.getSfidaCorsa();
+		Cursor c = databaseHelper.getSfidaCorsa(ID);
 		try
 		{
 			while (c.moveToNext())

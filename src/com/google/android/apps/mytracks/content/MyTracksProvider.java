@@ -482,6 +482,8 @@ public class MyTracksProvider extends ContentProvider {
     if (!hasLatitude || !hasLongitude || !hasTime) {
       throw new IllegalArgumentException("Latitude, longitude, and time values are required.");
     }
+    
+    
     long rowId = db.insert(TrackPointsColumns.TABLE_NAME, TrackPointsColumns._ID, values);
     if (rowId >= 0) {
       return ContentUris.appendId(TrackPointsColumns.CONTENT_URI.buildUpon(), rowId).build();
@@ -503,7 +505,9 @@ public class MyTracksProvider extends ContentProvider {
       throw new IllegalArgumentException("Both start time and start id values are required.");
     }
     long rowId = db.insert(TracksColumns.TABLE_NAME, TracksColumns._ID, contentValues);
-    Log.d("oddiioooooooooooooooooooo", "fermate tutti il mio id è  "+ rowId);
+    //Log.d("oddiioooooooooooooooooooo", "fermate tutti il mio id è  "+ rowId);
+    
+    
     
     if (rowId >= 0) {
       return ContentUris.appendId(TracksColumns.CONTENT_URI.buildUpon(), rowId).build();

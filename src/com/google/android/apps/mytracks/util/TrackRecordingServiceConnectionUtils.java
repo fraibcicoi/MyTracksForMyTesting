@@ -22,6 +22,7 @@ import com.google.android.apps.mytracks.services.ITrackRecordingService;
 import com.google.android.apps.mytracks.services.TrackRecordingService;
 import com.google.android.apps.mytracks.services.TrackRecordingServiceConnection;
 import com.google.android.maps.mytracks.R;
+import com.myapp.android.database.TemporaryData;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -119,8 +120,17 @@ public class TrackRecordingServiceConnectionUtils {
            */
           long recordingTrackId = PreferencesUtils.getLong(
               context, R.string.recording_track_id_key);
+          
+          
           trackRecordingService.endCurrentTrack();
+          
+        
+        
           if (recordingTrackId != PreferencesUtils.RECORDING_TRACK_ID_DEFAULT) {
+            
+            ((TemporaryData)context.getApplicationContext()).checkAndAddTrack(recordingTrackId);
+            
+            
             Intent intent = IntentUtils.newIntent(context, TrackEditActivity.class)
                 .putExtra(TrackEditActivity.EXTRA_TRACK_ID, recordingTrackId)
                 .putExtra(TrackEditActivity.EXTRA_NEW_TRACK, true);

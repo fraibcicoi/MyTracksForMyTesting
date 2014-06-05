@@ -19,10 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
  */
+
 package com.google.android.maps.mytracks.myappexample;
 
 import com.google.android.maps.mytracks.R;
 import com.myapp.android.database.DatabaseHelper;
+import com.myapp.android.database.SfidaCorsaTable;
+import com.myapp.android.database.TemporaryData;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -37,6 +40,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 public class SfideInCorsoFragment extends Fragment{
 
+	private int IdUtente;
+	private Cursor sfideCorsaPending;
 	
 	public SfideInCorsoFragment() {
         // Empty constructor required for fragment subclasses
@@ -53,7 +58,7 @@ public class SfideInCorsoFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_sfide_in_corso, container, false);
-		
+		IdUtente=((TemporaryData)(getActivity().getApplication())).getID();
 	//	SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		//SharedPreferences.Editor editor = sharedPref.edit();
 		
@@ -84,18 +89,27 @@ public class SfideInCorsoFragment extends Fragment{
      list.add(new Contatto("Aldo","Rossi","1234567890"));
      */
 	 
-	 Cursor sfideCorsaPending= (new DatabaseHelper(getActivity())).getSfidaCorsa();
+	 sfideCorsaPending= (new DatabaseHelper(getActivity())).getSfidaCorsa(IdUtente);
 	 int[]  to = new int[] { R.id.textViewFrequenza };
      CursorAdapterCorsa adapter = new CursorAdapterCorsa(getActivity(),sfideCorsaPending,2);
      listView.setAdapter(adapter);
-    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
       public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
        Log.d("test", "hai schiacciato "+pos);
+       
+       
        Intent mainActivity = new Intent(getActivity(), CorsaTrackListActivity.class);  
+       Bundle sfida= new Bundle();
+       sfideCorsaPending.moveToPosition(pos);
+      sfida.putInt("ID_SFIDA",sfideCorsaPending.getInt(sfideCorsaPending.getColumnIndex(SfidaCorsaTable._ID)));
+       mainActivity.putExtra("SFIDA", sfida);
+       //   sfida.put
        startActivity(mainActivity);
-     //  new DettagliSfidaInCorso();
+    
+       
+       //  new DettagliSfidaInCorso();
     //Fragment fragment = new DettagliSfidaInCorso();
    // ( getActivity().getFragmentManager()).addOnBackStackChangedListener(listener);.removeOnBackStackChangedListener(listener); .FragmentTransaction.replace(fragment);
    //    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

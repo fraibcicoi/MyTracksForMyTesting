@@ -14,6 +14,12 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper
 {
+    private static int IN_CORSO=0;
+    private static int VINTA=1;
+    private static int PERSA=2;
+  //  private static int IN_CORSO=0;
+  //  private static int VINTA=1;
+    
 	private SQLiteDatabase database;
 	private static final String DATABASE_NAME = "MyApp5.db";
 
@@ -31,15 +37,19 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		String sql = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL);";
 		db.execSQL(MessageFormat.format(sql, ProvinciaTable.TABLE_NAME, ProvinciaTable._ID, ProvinciaTable.CODICE, ProvinciaTable.NOME));
 		
-		String sql1 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} INTEGER NOT NULL,{4} INTEGER NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL);";
-		db.execSQL(MessageFormat.format(sql1, SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable._ID, SfidaCorsaTable.FREQUENZA, SfidaCorsaTable.DURATA, SfidaCorsaTable.DISTANZAMINIMA, SfidaCorsaTable.SCOMMESSA,SfidaCorsaTable.VINCITA));
+		String sql1 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} INTEGER NOT NULL,{4} INTEGER NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} REAL NOT NULL, {9} INTEGER NOT NULL);";
+		db.execSQL(MessageFormat.format(sql1, SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable._ID, SfidaCorsaTable.FREQUENZA, SfidaCorsaTable.DURATA, SfidaCorsaTable.DISTANZAMINIMA, SfidaCorsaTable.SCOMMESSA,SfidaCorsaTable.VINCITA, SfidaCorsaTable.ID_GIOCATORE, SfidaCorsaTable.DATA_INIZIO, SfidaCorsaTable.STATO));
 		
 		String sql2 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL,{4} TEXT NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} INTEGER NOT NULL, {9} INTEGER NOT NULL, {10} INTEGER NOT NULL, {11} INTEGER NOT NULL, {12} TEXT NOT NULL, {13} REAL);";
 		db.execSQL(MessageFormat.format(sql2, ProfiloTable.TABLE_NAME, ProfiloTable._ID, ProfiloTable.EMAIL, ProfiloTable.PASSWORD, ProfiloTable.NICKNAME, ProfiloTable.HEIGHT, ProfiloTable.WEIGHT, ProfiloTable.DAY_OF_BIRHT, ProfiloTable.MONTH_OF_BIRHT, ProfiloTable.YEAR_OF_BIRHT, ProfiloTable.SEX, ProfiloTable.REMEMBER_ME, ProfiloTable.NOME, ProfiloTable.GOAL_WEIGHT));
 	
 		String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
-	        db.execSQL(MessageFormat.format(sql3, PesoTable.TABLE_NAME, PesoTable._ID, PesoTable.PROFILO_ID, PesoTable.DATE, PesoTable.WEIGHT));
-	    	
+	    db.execSQL(MessageFormat.format(sql3, PesoTable.TABLE_NAME, PesoTable._ID, PesoTable.PROFILO_ID, PesoTable.DATE, PesoTable.WEIGHT));
+	    
+	    String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL );";
+        db.execSQL(MessageFormat.format(sql4, ProvinciaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO));
+        
+	    
 		
 	
 	
@@ -49,20 +59,23 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	public void onCreate(SQLiteDatabase db)
 	{
 		Log.d("test", "creo database");
-		String sql = "CREATE TABLE {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL);";
+		String sql = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL);";
 		db.execSQL(MessageFormat.format(sql, ProvinciaTable.TABLE_NAME, ProvinciaTable._ID, ProvinciaTable.CODICE, ProvinciaTable.NOME));
 		
-		String sql1 = "CREATE TABLE {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} INTEGER NOT NULL,{4} INTEGER NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL);";
-		db.execSQL(MessageFormat.format(sql1, SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable._ID, SfidaCorsaTable.FREQUENZA, SfidaCorsaTable.DURATA, SfidaCorsaTable.DISTANZAMINIMA, SfidaCorsaTable.SCOMMESSA,SfidaCorsaTable.VINCITA));
-		
-		String sql2 = "CREATE TABLE {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL,{4} TEXT NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} INTEGER NOT NULL, {9} INTEGER NOT NULL, {10} INTEGER NOT NULL, {11} INTEGER NOT NULL, {12} TEXT NOT NULL, {13} REAL);";
+		  String sql1 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} INTEGER NOT NULL,{4} INTEGER NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} REAL NOT NULL, {9} INTEGER NOT NULL);";
+	        db.execSQL(MessageFormat.format(sql1, SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable._ID, SfidaCorsaTable.FREQUENZA, SfidaCorsaTable.DURATA, SfidaCorsaTable.DISTANZAMINIMA, SfidaCorsaTable.SCOMMESSA,SfidaCorsaTable.VINCITA, SfidaCorsaTable.ID_GIOCATORE, SfidaCorsaTable.DATA_INIZIO, SfidaCorsaTable.STATO));
+	    
+		String sql2 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL,{4} TEXT NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} INTEGER NOT NULL, {9} INTEGER NOT NULL, {10} INTEGER NOT NULL, {11} INTEGER NOT NULL, {12} TEXT NOT NULL, {13} REAL);";
 		db.execSQL(MessageFormat.format(sql2, ProfiloTable.TABLE_NAME, ProfiloTable._ID, ProfiloTable.EMAIL, ProfiloTable.PASSWORD, ProfiloTable.NICKNAME, ProfiloTable.HEIGHT, ProfiloTable.WEIGHT, ProfiloTable.DAY_OF_BIRHT, ProfiloTable.MONTH_OF_BIRHT, ProfiloTable.YEAR_OF_BIRHT, ProfiloTable.SEX, ProfiloTable.REMEMBER_ME, ProfiloTable.NOME, ProfiloTable.GOAL_WEIGHT));
-		  String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
+	
+		
+		String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
           db.execSQL(MessageFormat.format(sql3, PesoTable.TABLE_NAME, PesoTable._ID, PesoTable.PROFILO_ID, PesoTable.DATE, PesoTable.WEIGHT));
   
-		
+          String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL );";
+          db.execSQL(MessageFormat.format(sql4, ProvinciaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO));
+      	
 		database=db;
-		inserisciProvince(db);
 	
 	
 	}
@@ -82,18 +95,41 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		db.insert(ProvinciaTable.TABLE_NAME, null, v);
 	}
 
-	public void inserisciSfidaCorsa(int frequenza, int durata,int distanzaMinima, float vincita, float scommessa)
+	public void inserisciSfidaCorsa(int frequenza, int durata,int distanzaMinima, float vincita, float scommessa, int ID)
 	{
-		ContentValues v = new ContentValues();
-		v.put(SfidaCorsaTable.FREQUENZA, frequenza);
+	    float data=new Date().getTime();
+	    
+	    ContentValues v = new ContentValues();
+		
+	    v.put(SfidaCorsaTable.FREQUENZA, frequenza);
 		v.put(SfidaCorsaTable.DURATA, durata);
 		v.put(SfidaCorsaTable.DISTANZAMINIMA, distanzaMinima);
 		v.put(SfidaCorsaTable.SCOMMESSA, scommessa);
 		v.put(SfidaCorsaTable.VINCITA, vincita);
-			
+		v.put(SfidaCorsaTable.ID_GIOCATORE, ID);
+		v.put(SfidaCorsaTable.DATA_INIZIO, data);
+		v.put(SfidaCorsaTable.STATO, IN_CORSO);
+         
+	     
 
+		
+		
 		getReadableDatabase().insert(SfidaCorsaTable.TABLE_NAME, null, v);
 	}
+
+	   public void inserisciCorsaSingola(int idSfida, int esito)
+	    {
+	        float data=new Date().getTime();
+	        
+	        ContentValues v = new ContentValues();
+	        
+	        v.put(CorsaSingolaTable.ID_SFIDA, idSfida);
+	        v.put(CorsaSingolaTable.DATA, data);
+	        v.put(CorsaSingolaTable.ESITO, esito);
+	        getReadableDatabase().insert(CorsaSingolaTable.TABLE_NAME, null, v);
+	    }
+
+	
 	
 	public void inserisciProfilo(String email, String password, String nickname, float height, float weight, int dayOfBirth, int monthOfBirth, int yearOfBirth, int sex, int remeberMe, String nome )
 	{
@@ -202,9 +238,9 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 				null, null, ProvinciaTable.NOME));
 	}
 
-	public Cursor getSfidaCorsa()
+	public Cursor getSfidaCorsa(int ID)
 	{
-		return (getReadableDatabase().query( SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable.COLUMNS, null , null,
+		return (getReadableDatabase().query( SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable.COLUMNS, SfidaCorsaTable.ID_GIOCATORE+"=?", new String[] { ID+""},
 				null, null, null));
 	}
 

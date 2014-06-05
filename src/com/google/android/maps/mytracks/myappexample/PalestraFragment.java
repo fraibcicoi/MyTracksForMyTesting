@@ -124,9 +124,9 @@ public class PalestraFragment extends Fragment{
 	{
 		
 		DatabaseHelper databaseHelper = new DatabaseHelper(getActivity());
-		databaseHelper.inserisciSfidaCorsa((int)frequenzaSpinner.getSelectedItemId(), (int)periodoSpinner.getSelectedItemId(), (int)TempoSpinner.getSelectedItemId(),risultatoScommessa,scommessa);
+		//databaseHelper.inserisciSfidaCorsa((int)frequenzaSpinner.getSelectedItemId(), (int)periodoSpinner.getSelectedItemId(), (int)TempoSpinner.getSelectedItemId(),risultatoScommessa,scommessa);
 	
-		Cursor c = databaseHelper.getSfidaCorsa();
+		Cursor c = databaseHelper.getSfidaCorsa(1);
 		try
 		{
 			while (c.moveToNext())
