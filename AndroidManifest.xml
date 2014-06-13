@@ -202,10 +202,10 @@ limitations under the License.
       android:name="com.google.android.apps.mytracks.SensorStateActivity" />
     <activity
       android:name="com.google.android.apps.mytracks.TrackDetailActivity"
-      android:parentActivityName=".myappexample.CorsaTrackListActivity" >
+      android:parentActivityName=".myappexample.MainActivity" >
       <meta-data
         android:name="android.support.PARENT_ACTIVITY"
-        android:value=".myappexample.CorsaTrackListActivity"/>
+        android:value=".myappexample.MainActivity"/>
     </activity>
     <activity android:name="com.google.android.apps.mytracks.TrackEditActivity" />
     <activity android:name="com.google.android.apps.mytracks.TrackListActivity" >
@@ -218,9 +218,17 @@ limitations under the License.
         android:value="com.google.android.apps.mytracks.SearchListActivity" />
     </activity>
     
+     <activity
+            android:name="com.google.android.maps.mytracks.myappexample.MainActivity2"
+            android:label="@string/app_name" >
+     
+     
+        </activity>
+    
      <activity 
       android:name="com.google.android.maps.mytracks.myappexample.CorsaTrackListActivity"
-     android:parentActivityName=".myappexample.MainActivity" >
+     android:parentActivityName=".myappexample.MainActivity" 
+      android:launchMode="singleTop">
       <meta-data
         android:name="android.support.PARENT_ACTIVITY"
         android:value=".myappexample.MainActivity"/>
@@ -258,6 +266,7 @@ limitations under the License.
         <activity
             android:name="com.google.android.maps.mytracks.myappexample.StartActivity"
             android:label="@string/app_name" >
+      
               <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

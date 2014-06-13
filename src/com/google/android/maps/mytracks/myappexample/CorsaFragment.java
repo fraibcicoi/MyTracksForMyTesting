@@ -26,7 +26,6 @@ import com.google.android.maps.mytracks.R;
 import com.myapp.android.database.DatabaseHelper;
 import com.myapp.android.database.TemporaryData;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -130,19 +129,7 @@ public class CorsaFragment extends Fragment{
 		int ID=((TemporaryData)(getActivity().getApplication())).getID();
 		databaseHelper.inserisciSfidaCorsa((int)frequenzaSpinner.getSelectedItemId(), (int)periodoSpinner.getSelectedItemId(), (int)distanzaSpinner.getSelectedItemId(),risultatoScommessa,scommessa,ID);
 	
-		Cursor c = databaseHelper.getSfidaCorsa(ID);
-		try
-		{
-			while (c.moveToNext())
-			{
-				Log.d("devAPP", c.getLong(0) + " " + c.getString(1) + " " + c.getString(2));
-			}
-		}
-		finally
-		{
-			c.close();
-		}
-		
+	
 		
 	}
 	

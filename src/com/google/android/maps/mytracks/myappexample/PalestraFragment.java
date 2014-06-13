@@ -21,21 +21,38 @@ THE SOFTWARE
  */
 package com.google.android.maps.mytracks.myappexample;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.maps.mytracks.R;
 import com.myapp.android.database.DatabaseHelper;
 
-import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager.LayoutParams;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class PalestraFragment extends Fragment{
 
@@ -48,7 +65,15 @@ public class PalestraFragment extends Fragment{
 	Button bottoniScommetti;
 	float risultatoScommessa;
 	float scommessa;
-	public PalestraFragment() {
+	   PopupWindow mapPopup;
+	   View popUpView;
+	   
+	  static final LatLng HAMBURG = new LatLng(53.558, 9.927);
+	  static final LatLng KIEL = new LatLng(53.551, 9.993);
+	  private GoogleMap map;
+	  
+	  
+	  public PalestraFragment() {
         // Empty constructor required for fragment subclasses
     }
 	
@@ -62,17 +87,24 @@ public class PalestraFragment extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_palestra, container, false);
+	  
+	  // View view = inflater.inflate(R.layout.fragment_palestra, container, false);
+	    
+	  View view = inflater.inflate(R.layout.fragment_palestra, container, false);
 		
-				
-	//	SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+	
+
+		  //        return null;
+       
+
+  //	SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		//SharedPreferences.Editor editor = sharedPref.edit();
 		
 	//	editor.putInt(getString(R.string.saved_high_score), 10);
 		
 		
 	//	editor.commit();
-		
+	
 		
 		return view;
 	}
@@ -80,7 +112,100 @@ public class PalestraFragment extends Fragment{
 	
 	@Override
 	public void onViewCreated (View view, Bundle savedInstanceState)
-	{/*
+	{
+	  bottoniScommetti=(Button) getView().findViewById(R.id.inserisciButton);
+	  popUpView = getActivity().getLayoutInflater().inflate(R.layout.fragment_palestra_secondo,null); // inflating popup layout
+	  bottoniScommetti.setOnClickListener(new OnClickListener() {
+	        
+	        @Override
+	        public void onClick(View arg0) {
+
+	         
+	          mapPopup = new PopupWindow(popUpView, LayoutParams.FILL_PARENT,    LayoutParams.WRAP_CONTENT, true); // Creation of popup
+	          mapPopup.setAnimationStyle(android.R.style.Animation_Dialog);
+	          mapPopup.showAtLocation(popUpView, Gravity.CENTER, 0, 0);
+	          Button btnCancel = (Button) popUpView.findViewById(R.id.conferma);
+	          btnCancel.setOnClickListener(new OnClickListener() {
+	            @Override
+	            public void onClick(View v) {
+	              mapPopup.dismiss();
+	            }
+	        });   
+	        
+	          map = ((SupportMapFragment)  getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+	          if(map!=null){
+	            
+	          Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG)
+	              .title("Hamburg"));
+	          Marker kiel = map.addMarker(new MarkerOptions()
+	              .position(KIEL)
+	              .title("Kiel")
+	              .snippet("Kiel is cool")
+	              .icon(BitmapDescriptorFactory
+	                  .fromResource(R.drawable.ic_arrow_320)));
+
+	          // Move the camera instantly to hamburg with a zoom of 15.
+	          map.moveCamera(CameraUpdateFactory.newLatLngZoom(HAMBURG, 15));
+
+	          // Zoom in, animating the camera.
+	          map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);  
+	          map.setOnMapClickListener(new OnMapClickListener() {
+
+	            @Override
+	            public void onMapClick(LatLng latLng) {
+	          
+	          
+	          Geocoder geocoder;
+	          List<Address> addresses;
+	          geocoder = new Geocoder(getActivity(),Locale.getDefault());
+	          try {
+              addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+              String address = addresses.get(0).getAddressLine(0);
+              String city = addresses.get(0).getAddressLine(1);
+              String country = addresses.get(0).getAddressLine(2);
+              Marker hamburg1 = map.addMarker(new MarkerOptions().position(latLng)
+                  .title(address));
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+
+	         
+	            }});
+	          
+	          }
+	              
+	              	        }
+	    });
+	  
+	  
+	  
+	 
+      
+	 
+  
+	  /*
+	  
+	   map = ((MapFragment)  getActivity().getFragmentManager().findFragmentById(R.id.map))
+           .getMap();
+       Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG)
+           .title("Hamburg"));
+       Marker kiel = map.addMarker(new MarkerOptions()
+           .position(KIEL)
+           .title("Kiel")
+           .snippet("Kiel is cool")
+           .icon(BitmapDescriptorFactory
+               .fromResource(R.drawable.ic_arrow_320)));
+
+       // Move the camera instantly to hamburg with a zoom of 15.
+       map.moveCamera(CameraUpdateFactory.newLatLngZoom(HAMBURG, 15));
+
+       // Zoom in, animating the camera.
+       map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+*/
+	  
+	  /*
+	
 		setupSpinner();
 		
 		
@@ -126,18 +251,7 @@ public class PalestraFragment extends Fragment{
 		DatabaseHelper databaseHelper = new DatabaseHelper(getActivity());
 		//databaseHelper.inserisciSfidaCorsa((int)frequenzaSpinner.getSelectedItemId(), (int)periodoSpinner.getSelectedItemId(), (int)TempoSpinner.getSelectedItemId(),risultatoScommessa,scommessa);
 	
-		Cursor c = databaseHelper.getSfidaCorsa(1);
-		try
-		{
-			while (c.moveToNext())
-			{
-				Log.d("devAPP", c.getLong(0) + " " + c.getString(1) + " " + c.getString(2));
-			}
-		}
-		finally
-		{
-			c.close();
-		}
+	
 		
 		
 	}

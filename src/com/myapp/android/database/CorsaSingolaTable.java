@@ -8,6 +8,8 @@ public interface CorsaSingolaTable extends BaseColumns
 
 	String ID_SFIDA = "IdSfida";
 	
+	String ID_CORSA_REGISTRATA = "IdCorsaRegistrata";
+	
 	String DATA = "data";
 
 	String ESITO = "Esito";
@@ -15,5 +17,5 @@ public interface CorsaSingolaTable extends BaseColumns
 
 	
 	String[] COLUMNS = new String[]
-	{ _ID, ID_SFIDA, DATA, ESITO};
+	{ _ID, ID_SFIDA, DATA, ESITO, ID_CORSA_REGISTRATA};
 }

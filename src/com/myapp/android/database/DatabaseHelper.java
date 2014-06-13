@@ -14,21 +14,22 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-    private static int IN_CORSO=0;
-    private static int VINTA=1;
-    private static int PERSA=2;
+    public static int IN_CORSO=0;
+    public static int VINTA=1;
+    public static int PERSA=2;
+    private Cursor lastSfideCorsaGiven=null;
   //  private static int IN_CORSO=0;
   //  private static int VINTA=1;
     
 	private SQLiteDatabase database;
-	private static final String DATABASE_NAME = "MyApp5.db";
+	private static final String DATABASE_NAME = "MyApp7.db";
 
 	private static final int SCHEMA_VERSION = 1;
 
 	public DatabaseHelper(Context context)
 	{
 		super(context, DATABASE_NAME, null, SCHEMA_VERSION);
-	onCreateMy(getWritableDatabase());
+	//onCreateMy(getWritableDatabase());
 	}
 	
 	
@@ -46,8 +47,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
 	    db.execSQL(MessageFormat.format(sql3, PesoTable.TABLE_NAME, PesoTable._ID, PesoTable.PROFILO_ID, PesoTable.DATE, PesoTable.WEIGHT));
 	    
-	    String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL );";
-        db.execSQL(MessageFormat.format(sql4, ProvinciaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO));
+	    String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL, {5} INTEGER NOT NULL );";
+        db.execSQL(MessageFormat.format(sql4, CorsaSingolaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO, CorsaSingolaTable.ID_CORSA_REGISTRATA));
         
 	    
 		
@@ -72,8 +73,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
           db.execSQL(MessageFormat.format(sql3, PesoTable.TABLE_NAME, PesoTable._ID, PesoTable.PROFILO_ID, PesoTable.DATE, PesoTable.WEIGHT));
   
-          String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL );";
-          db.execSQL(MessageFormat.format(sql4, ProvinciaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO));
+          String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL, {5} INTEGER NOT NULL );";
+          db.execSQL(MessageFormat.format(sql4, CorsaSingolaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO, CorsaSingolaTable.ID_CORSA_REGISTRATA));
       	
 		database=db;
 	
@@ -117,7 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		getReadableDatabase().insert(SfidaCorsaTable.TABLE_NAME, null, v);
 	}
 
-	   public void inserisciCorsaSingola(int idSfida, int esito)
+	   public void inserisciCorsaSingola(int idSfida,int idCorsaRegistrata ,int esito)
 	    {
 	        float data=new Date().getTime();
 	        
@@ -126,6 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	        v.put(CorsaSingolaTable.ID_SFIDA, idSfida);
 	        v.put(CorsaSingolaTable.DATA, data);
 	        v.put(CorsaSingolaTable.ESITO, esito);
+	        v.put(CorsaSingolaTable.ID_CORSA_REGISTRATA,idCorsaRegistrata);
 	        getReadableDatabase().insert(CorsaSingolaTable.TABLE_NAME, null, v);
 	    }
 
@@ -238,11 +240,22 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 				null, null, ProvinciaTable.NOME));
 	}
 
-	public Cursor getSfidaCorsa(int ID)
+	public Cursor getSfidaCorsa(int ID, int esito)
 	{
-		return (getReadableDatabase().query( SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable.COLUMNS, SfidaCorsaTable.ID_GIOCATORE+"=?", new String[] { ID+""},
+	  
+	  //test.
+	  
+		return (getReadableDatabase().query( SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable.COLUMNS, SfidaCorsaTable.ID_GIOCATORE+"=? AND "+SfidaCorsaTable.STATO+"=?", new String[] { ID+"", esito+""},
 				null, null, null));
 	}
+	
+	   public Cursor getCorseSingole(int ID, int esito)
+	    {
+	        return (getReadableDatabase().query( CorsaSingolaTable.TABLE_NAME, CorsaSingolaTable.COLUMNS, CorsaSingolaTable.ID_SFIDA+"=? AND "+CorsaSingolaTable.ESITO+"=?", new String[] { ID+"", esito+""},
+	                null, null, null));
+	    }
+
+	
 
 	public Cursor getProfilo(String username, String password)
 	{
@@ -273,8 +286,6 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 
 	public Cursor getPesiUtente(int ID)
     {
-        //Cursor test= (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, ProfiloTable.NICKNAME +" = " +username+" AND "+ ProfiloTable.PASSWORD+" = "+password , null,
-    //          null, null, null));
         
         Cursor test= (getReadableDatabase().query( PesoTable.TABLE_NAME, PesoTable.COLUMNS, PesoTable.PROFILO_ID+"=?", new String[] { ID+"" },
                 null, null, null));
@@ -286,8 +297,6 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
     }
 	public float getGoalWeight(int ID)
     {
-        //Cursor test= (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, ProfiloTable.NICKNAME +" = " +username+" AND "+ ProfiloTable.PASSWORD+" = "+password , null,
-    //          null, null, null));
         
         Cursor test= (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, ProfiloTable._ID+"=?", new String[] { ID+"" },
                 null, null, null));
@@ -298,7 +307,16 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
     }
        return 0;
        }
-	
+	public int getSfideGiaFatteInSettimana(int IDSfida, long inizioSettimana)
+    {
+     
+        Cursor test= (getReadableDatabase().query( CorsaSingolaTable.TABLE_NAME, CorsaSingolaTable.COLUMNS, CorsaSingolaTable.ID_SFIDA+"=? AND "+CorsaSingolaTable.DATA+">? AND "+ CorsaSingolaTable.ESITO+"=?", new String[] { IDSfida+"", inizioSettimana+"" ,VINTA+""},
+                null, null, null));
+        int count=test.getCount();
+        test.close();
+        return count;
+    }
+    
 
 	
 	

@@ -89,6 +89,9 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
   protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
 
+    
+    
+    
     Object retained = getLastCustomNonConfigurationInstance();
     if (retained instanceof CheckPermissionAsyncTask) {
       syncDriveAsyncTask = (CheckPermissionAsyncTask) retained;
@@ -114,7 +117,13 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
 
     name = (EditText) findViewById(R.id.track_edit_name);
     name.setText(track.getName());
-
+    track.setCategory("RUN");
+track.setIcon("RUN");
+//track.set
+//track.setCategory(category);
+    
+    
+    
     activityType = (AutoCompleteTextView) findViewById(R.id.track_edit_activity_type);
     activityType.setText(track.getCategory());
 
@@ -154,13 +163,16 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
 
     activityTypeIcon = (Spinner) findViewById(R.id.track_edit_activity_type_icon);
     activityTypeIcon.setAdapter(TrackIconUtils.getIconSpinnerAdapter(this, iconValue));
+   // activityTypeIcon.setSelection(2);
     activityTypeIcon.setOnTouchListener(new View.OnTouchListener() {
         @Override
       public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
           Log.d("test2", "sono nel action up");
+          
           ChooseActivityTypeDialogFragment.newInstance(activityType.getText().toString()).show(
               getSupportFragmentManager(),
+          
               ChooseActivityTypeDialogFragment.CHOOSE_ACTIVITY_TYPE_DIALOG_TAG);
         }
         return true;
@@ -179,6 +191,21 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
         return true;
       }
     });
+    
+    
+    
+    
+//    onMyChooseActivityTypeDone("WALK", false);
+  //  setActivityTypeIcon(TrackIconUtils.getIconValue(TrackEditActivity.this, "WALK"));
+  //  set
+    
+    
+    
+    
+    
+    
+    
+    
 
     description = (EditText) findViewById(R.id.track_edit_description);
     description.setText(track.getDescription());
@@ -187,10 +214,14 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
     save.setOnClickListener(new View.OnClickListener() {
         @Override
       public void onClick(View v) {
-        TrackUtils.updateTrack(TrackEditActivity.this, track, name.getText().toString(),
+       /* TrackUtils.updateTrack(TrackEditActivity.this, track, name.getText().toString(),
             activityType.getText().toString(), description.getText().toString(),
             myTracksProviderUtils, trackRecordingServiceConnection, newWeight);
-
+*/
+           TrackUtils.updateTrack(TrackEditActivity.this, track, name.getText().toString(),
+         "WALK", description.getText().toString(),
+          myTracksProviderUtils, trackRecordingServiceConnection, newWeight);
+          
         if (EulaUtils.showEnableSync(TrackEditActivity.this)) {
           EulaUtils.setShowEnableSync(TrackEditActivity.this);
           if (PreferencesUtils.getBoolean(TrackEditActivity.this, R.string.drive_sync_key,
@@ -283,6 +314,16 @@ public class TrackEditActivity extends AbstractMyTracksActivity implements Choos
     activityType.setText(getString(TrackIconUtils.getIconActivityType(value)));
   }
 
+  
+  public void onMyChooseActivityTypeDone(String value, boolean hasNewWeight) {
+    if (!newWeight) {
+      newWeight = hasNewWeight;
+    }
+    setActivityTypeIcon(value);
+    activityType.setText(getString(TrackIconUtils.getIconActivityType(value)));
+  }
+
+  
   @Override
   public void onEnableSyncDone(boolean enable) {
     if (enable) {

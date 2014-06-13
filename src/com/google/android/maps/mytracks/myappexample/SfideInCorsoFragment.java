@@ -40,6 +40,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 public class SfideInCorsoFragment extends Fragment{
 
+  private DatabaseHelper db;
 	private int IdUtente;
 	private Cursor sfideCorsaPending;
 	
@@ -59,6 +60,8 @@ public class SfideInCorsoFragment extends Fragment{
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_sfide_in_corso, container, false);
 		IdUtente=((TemporaryData)(getActivity().getApplication())).getID();
+		
+		db= new DatabaseHelper(getActivity());
 	//	SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
 		//SharedPreferences.Editor editor = sharedPref.edit();
 		
@@ -76,36 +79,51 @@ public class SfideInCorsoFragment extends Fragment{
     {
     
 	 ListView listView = (ListView)getView().findViewById(R.id.listViewDemo);
+	
+	 
+	 //getActivity().startM
+	 sfideCorsaPending= db.getSfidaCorsa(IdUtente,db.IN_CORSO);
 	 
 	 
-     /*List list = new LinkedList();
-     
-     
-     list.add(new Contatto("Antonio","Coschignano","1234567890"));
-     list.add(new Contatto("Giovanni","Rossi","1234567890"));
-     list.add(new Contatto("Giuseppe","Bianchi","1234567890"));
-     list.add(new Contatto("Leonardo","Da Vinci","1234567890"));
-     list.add(new Contatto("Mario","Rossi","1234567890"));
-     list.add(new Contatto("Aldo","Rossi","1234567890"));
-     */
+	// int[]  to = new int[] { R.id.textViewFrequenza };
 	 
-	 sfideCorsaPending= (new DatabaseHelper(getActivity())).getSfidaCorsa(IdUtente);
-	 int[]  to = new int[] { R.id.textViewFrequenza };
+	 
+	 
+	 
+	 
      CursorAdapterCorsa adapter = new CursorAdapterCorsa(getActivity(),sfideCorsaPending,2);
+     
+     
+     
+     
      listView.setAdapter(adapter);
      listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+       
+       
       public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
        Log.d("test", "hai schiacciato "+pos);
        
        
-       Intent mainActivity = new Intent(getActivity(), CorsaTrackListActivity.class);  
-       Bundle sfida= new Bundle();
+       
+       Intent mainActivity = getActivity().getIntent();
+       mainActivity.setClass(getActivity(), CorsaTrackListActivity.class);
+     //   mainActivity.
+    //   Intent mainActivity = new Intent(getActivity(), CorsaTrackListActivity.class);  
+      // Bundle sfida= new Bundle();
+       
        sfideCorsaPending.moveToPosition(pos);
-      sfida.putInt("ID_SFIDA",sfideCorsaPending.getInt(sfideCorsaPending.getColumnIndex(SfidaCorsaTable._ID)));
-       mainActivity.putExtra("SFIDA", sfida);
+       
+     // sfida.putInt("ID_SFIDA",sfideCorsaPending.getInt(sfideCorsaPending.getColumnIndex(SfidaCorsaTable._ID)));
+     //  mainActivity.putExtra("SFIDA", sfida);
+       
+       ((TemporaryData)(getActivity().getApplication())).setIDSfidaDaCaricare(sfideCorsaPending.getInt(sfideCorsaPending.getColumnIndex(SfidaCorsaTable._ID)));
+    
+       
        //   sfida.put
+      // getActivity().finish();
+       mainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
        startActivity(mainActivity);
     
        
@@ -122,6 +140,14 @@ public class SfideInCorsoFragment extends Fragment{
     });   
 }
     
+	@Override
+	public void onPause()
+	{
+	  super.onPause();
+      sfideCorsaPending.close();
+      
+	}
+	
 	/*
 	 * Just an helper method to write the value received from the intent/action
 	 * into the TextView in the layout

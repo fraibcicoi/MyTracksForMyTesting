@@ -139,6 +139,27 @@ public class MainActivity extends FragmentActivity{
     }
 
     @Override
+    public void onPause()
+    {
+      super.onPause();
+      
+      int i;
+    }
+    
+    @Override
+    public void onResume()
+    {
+      super.onResume();
+      Fragment fragment = new RiepilogoSfideActivity();
+      FragmentManager fragmentManager = getSupportFragmentManager();
+      fragmentManager.beginTransaction().replace(R.id.descriptionFragment, fragment).commit();
+     
+      mDrawerList.setItemChecked(1, true);
+      setTitle(mPlanetTitles[1]);
+      mDrawerLayout.closeDrawer(mDrawerList);
+    }
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);

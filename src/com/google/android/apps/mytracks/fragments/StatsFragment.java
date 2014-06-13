@@ -297,6 +297,7 @@ public class StatsFragment extends Fragment implements TrackDataListener {
    * Updates the UI.
    */
   private void updateUi(FragmentActivity activity) {
+    category="RUN";
     ActivityType activityType = CalorieUtils.getActivityType(activity, category);
     String trackIconValue = TrackIconUtils.getIconValue(activity, category);
     StatsUtils.setTripStatisticsValues(

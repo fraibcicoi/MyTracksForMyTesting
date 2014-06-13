@@ -61,6 +61,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.maps.mytracks.BuildConfig;
 import com.google.android.maps.mytracks.R;
+import com.myapp.android.database.CorsaSingolaTable;
+import com.myapp.android.database.DatabaseHelper;
 import com.myapp.android.database.TemporaryData;
 
 import android.accounts.Account;
@@ -105,6 +107,8 @@ import java.util.Locale;
 public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
     implements EulaCaller, FileTypeCaller, PlayMultipleCaller, ChooseAccountCaller, ConfirmSyncCaller {
 
+  
+  private DatabaseHelper db;
   
   private int idSfida;
   private static final String TAG = CorsaTrackListActivity.class.getSimpleName();
@@ -296,25 +300,37 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
       @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
      //   ProfiloTable.NICKNAME+"=? and "+ProfiloTable.PASSWORD+"=?", new String[] { username, password }
-      return new CursorLoader(CorsaTrackListActivity.this, TracksColumns.CONTENT_URI, PROJECTION,null ,null, TrackUtils.TRACK_SORT_ORDER);
-    }
+        //   idSfida;
+        String IDProveRiusciti="";
+       // idSfida
+        
+     Cursor IdCorse=  db.getCorseSingole(idSfida, db.VINTA);
+       
+         if(IdCorse.moveToFirst())
+        {
+         do{
+           
+           IDProveRiusciti=IDProveRiusciti+TracksColumns._ID+"="+IdCorse.getInt(IdCorse.getColumnIndex(CorsaSingolaTable.ID_CORSA_REGISTRATA));
+           
+           if(!IdCorse.isLast())
+           {
+             IDProveRiusciti=IDProveRiusciti+" OR ";
+           }
+         }while(IdCorse.moveToNext()); 
+        }
+         else{
+           IDProveRiusciti=TracksColumns._ID+"="+Integer.MAX_VALUE;
+         }
+        
+         IdCorse.close();
+         
+        
+        
+        return new CursorLoader(CorsaTrackListActivity.this, TracksColumns.CONTENT_URI, PROJECTION,IDProveRiusciti ,null, TrackUtils.TRACK_SORT_ORDER);  }
 
       @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.d("test", "non so cosa faccio ma io qua ci entro");
-        cursor.moveToFirst();
-        try{
-          while(cursor.moveToNext())
-          {
-           Log.d("test", "qua forse è dove gli passo il cursor");
-          }
-        }finally{
-         
-         // cursor.close();
-        }
-        
-      //  cursor.
-      sectionResourceCursorAdapter.swapCursor(cursor);
+        sectionResourceCursorAdapter.swapCursor(cursor);
     }
 
       @Override
@@ -331,24 +347,36 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
    //   ProfiloTable.NICKNAME+"=? and "+ProfiloTable.PASSWORD+"=?", new String[] { username, password }
   
    //   idSfida;
+      String IDProveFallite="";
+     // idSfida
       
-      return new CursorLoader(CorsaTrackListActivity.this, TracksColumns.CONTENT_URI, PROJECTION,TracksColumns._ID+"=24 OR "+TracksColumns._ID+"=25" ,null, TrackUtils.TRACK_SORT_ORDER);
+   Cursor IdCorse=  db.getCorseSingole(idSfida, db.PERSA);
+     
+       if(IdCorse.moveToFirst())
+      {
+       do{
+         int idRegistrata=IdCorse.getInt(IdCorse.getColumnIndex(CorsaSingolaTable.ID_CORSA_REGISTRATA));
+         IDProveFallite=IDProveFallite+TracksColumns._ID+"="+idRegistrata;
+         
+         if(!IdCorse.isLast())
+         {
+           IDProveFallite=IDProveFallite+" OR ";
+         }
+       }while(IdCorse.moveToNext()); 
+     
+      }
+       else{
+         IDProveFallite=TracksColumns._ID+"="+Integer.MAX_VALUE;
+       }
+      
+       IdCorse.close();
+      
+      return new CursorLoader(CorsaTrackListActivity.this, TracksColumns.CONTENT_URI, PROJECTION,IDProveFallite ,null, TrackUtils.TRACK_SORT_ORDER);
   }
 
     @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-      Log.d("test", "non so cosa faccio ma io qua ci entro");
-      cursor.moveToFirst();
-      try{
-        while(cursor.moveToNext())
-        {
-         Log.d("test", "qua forse è dove gli passo il cursor");
-        }
-      }finally{
-       
-       // cursor.close();
-      }
-      
+        
     //  cursor.
     sectionResourceCursorAdapterTest.swapCursor(cursor);
   }
@@ -393,6 +421,7 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    db=new DatabaseHelper(this);
     if (BuildConfig.DEBUG) {
       ApiAdapterFactory.getApiAdapter().enableStrictMode();
     }
@@ -547,9 +576,11 @@ public class CorsaTrackListActivity extends AbstractSendToGoogleActivity
   protected void onStart() {
     super.onStart();
 
-    Bundle sfida=getIntent().getExtras().getBundle("SFIDA");
+    /*Bundle sfida=getIntent().getExtras().getBundle("SFIDA");
     idSfida=sfida.getInt("ID_SFIDA");
+    */
     
+    idSfida= ((TemporaryData)getApplication()).getIDSfidaDaCaricare();
     
     // Register shared preferences listener
     sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
