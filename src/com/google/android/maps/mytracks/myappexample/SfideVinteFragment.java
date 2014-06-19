@@ -24,15 +24,25 @@ package com.google.android.maps.mytracks.myappexample;
 
 import com.google.android.maps.mytracks.R;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 public class SfideVinteFragment extends Fragment{
 
+	Button gpsCoordinates;
 	
 	public SfideVinteFragment() {
         // Empty constructor required for fragment subclasses
@@ -61,7 +71,52 @@ public class SfideVinteFragment extends Fragment{
 		
 		return view;
 	}
+	
+	public void onViewCreated (View view, Bundle savedInstanceState)
+    {
+	  
+	  gpsCoordinates = (Button) getView().findViewById(R.id.leggiPosizione);
+	    
+	  
+	  gpsCoordinates.setOnClickListener(new OnClickListener() {
+        
+        @Override
+        public void onClick(View arg0) {
+          
+          GPSTracker  gps = new GPSTracker(getActivity());
+          
+          // check if GPS enabled     
+          if(gps.canGetLocation()){
+               
+              double latitude = gps.getLatitude();
+              double longitude = gps.getLongitude();
+              Geocoder geocoder;
+              List<Address> addresses;
+              geocoder = new Geocoder(getActivity(),Locale.getDefault());
+              try {
+              addresses = geocoder.getFromLocation(latitude, longitude, 1);
+              String address = addresses.get(0).getAddressLine(0);
+              String city = addresses.get(0).getAddressLine(1);
+              String country = addresses.get(0).getAddressLine(2);
+              Toast.makeText(getActivity().getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude+"\ne sei in "+address, Toast.LENGTH_LONG).show();    
+              
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
 
+              // \n is for new line
+          }else{
+              // can't get location
+              // GPS or Network is not enabled
+              // Ask user to enable GPS/network in settings
+              gps.showSettingsAlert();
+          }
+        
+        }
+	  });
+    }
+	
 	/*
 	 * Just an helper method to write the value received from the intent/action
 	 * into the TextView in the layout

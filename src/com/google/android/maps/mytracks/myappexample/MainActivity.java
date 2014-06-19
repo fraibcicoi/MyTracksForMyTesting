@@ -16,6 +16,8 @@
 
 package com.google.android.maps.mytracks.myappexample;
 import com.google.android.maps.mytracks.R;
+import com.myapp.android.database.DatabaseHelper;
+import com.myapp.android.database.TemporaryData;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -255,6 +257,17 @@ Fragment fragment = new NuovaSfidaActivity();
         mDrawerLayout.closeDrawer(mDrawerList);
 			break;
 		}
+		case 3:
+        {
+           DatabaseHelper db= new DatabaseHelper(this);
+           TemporaryData td= (TemporaryData)getApplication();
+           db.setRememberMe(td.getID()+"", 0);
+          Intent mainActivity = new Intent(MainActivity.this, StartActivity.class);  
+          startActivity(mainActivity);
+          
+          
+            break;
+        }
 		default:
 			break;
 		}

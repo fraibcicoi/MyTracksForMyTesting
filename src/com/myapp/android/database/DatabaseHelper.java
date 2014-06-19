@@ -1,5 +1,7 @@
 package com.myapp.android.database;
 
+import com.google.android.apps.mytracks.util.crittografiaPassword;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.crypto.SecretKey;
+
 public class DatabaseHelper extends SQLiteOpenHelper
 {
     public static int IN_CORSO=0;
@@ -22,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
   //  private static int VINTA=1;
     
 	private SQLiteDatabase database;
-	private static final String DATABASE_NAME = "MyApp7.db";
+	private static final String DATABASE_NAME = "MyApp10.db";
 
 	private static final int SCHEMA_VERSION = 1;
 
@@ -33,41 +37,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	}
 	
 	
-	public void onCreateMy(SQLiteDatabase db)
-	{
-		String sql = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL);";
-		db.execSQL(MessageFormat.format(sql, ProvinciaTable.TABLE_NAME, ProvinciaTable._ID, ProvinciaTable.CODICE, ProvinciaTable.NOME));
-		
-		String sql1 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} INTEGER NOT NULL,{4} INTEGER NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} REAL NOT NULL, {9} INTEGER NOT NULL);";
-		db.execSQL(MessageFormat.format(sql1, SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable._ID, SfidaCorsaTable.FREQUENZA, SfidaCorsaTable.DURATA, SfidaCorsaTable.DISTANZAMINIMA, SfidaCorsaTable.SCOMMESSA,SfidaCorsaTable.VINCITA, SfidaCorsaTable.ID_GIOCATORE, SfidaCorsaTable.DATA_INIZIO, SfidaCorsaTable.STATO));
-		
-		String sql2 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL,{4} TEXT NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} INTEGER NOT NULL, {9} INTEGER NOT NULL, {10} INTEGER NOT NULL, {11} INTEGER NOT NULL, {12} TEXT NOT NULL, {13} REAL);";
-		db.execSQL(MessageFormat.format(sql2, ProfiloTable.TABLE_NAME, ProfiloTable._ID, ProfiloTable.EMAIL, ProfiloTable.PASSWORD, ProfiloTable.NICKNAME, ProfiloTable.HEIGHT, ProfiloTable.WEIGHT, ProfiloTable.DAY_OF_BIRHT, ProfiloTable.MONTH_OF_BIRHT, ProfiloTable.YEAR_OF_BIRHT, ProfiloTable.SEX, ProfiloTable.REMEMBER_ME, ProfiloTable.NOME, ProfiloTable.GOAL_WEIGHT));
-	
-		String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
-	    db.execSQL(MessageFormat.format(sql3, PesoTable.TABLE_NAME, PesoTable._ID, PesoTable.PROFILO_ID, PesoTable.DATE, PesoTable.WEIGHT));
-	    
-	    String sql4 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} REAL NOT NULL, {4} INTEGER NOT NULL, {5} INTEGER NOT NULL );";
-        db.execSQL(MessageFormat.format(sql4, CorsaSingolaTable.TABLE_NAME, CorsaSingolaTable._ID, CorsaSingolaTable.ID_SFIDA, CorsaSingolaTable.DATA,CorsaSingolaTable.ESITO, CorsaSingolaTable.ID_CORSA_REGISTRATA));
-        
-	    
-		
-	
-	
-	}
-
 	@Override
 	public void onCreate(SQLiteDatabase db)
 	{
 		Log.d("test", "creo database");
-		String sql = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL);";
-		db.execSQL(MessageFormat.format(sql, ProvinciaTable.TABLE_NAME, ProvinciaTable._ID, ProvinciaTable.CODICE, ProvinciaTable.NOME));
 		
 		  String sql1 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} INTEGER NOT NULL,{4} INTEGER NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} REAL NOT NULL, {9} INTEGER NOT NULL);";
 	        db.execSQL(MessageFormat.format(sql1, SfidaCorsaTable.TABLE_NAME, SfidaCorsaTable._ID, SfidaCorsaTable.FREQUENZA, SfidaCorsaTable.DURATA, SfidaCorsaTable.DISTANZAMINIMA, SfidaCorsaTable.SCOMMESSA,SfidaCorsaTable.VINCITA, SfidaCorsaTable.ID_GIOCATORE, SfidaCorsaTable.DATA_INIZIO, SfidaCorsaTable.STATO));
 	    
-		String sql2 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} TEXT NOT NULL,{4} TEXT NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} INTEGER NOT NULL, {9} INTEGER NOT NULL, {10} INTEGER NOT NULL, {11} INTEGER NOT NULL, {12} TEXT NOT NULL, {13} REAL);";
-		db.execSQL(MessageFormat.format(sql2, ProfiloTable.TABLE_NAME, ProfiloTable._ID, ProfiloTable.EMAIL, ProfiloTable.PASSWORD, ProfiloTable.NICKNAME, ProfiloTable.HEIGHT, ProfiloTable.WEIGHT, ProfiloTable.DAY_OF_BIRHT, ProfiloTable.MONTH_OF_BIRHT, ProfiloTable.YEAR_OF_BIRHT, ProfiloTable.SEX, ProfiloTable.REMEMBER_ME, ProfiloTable.NOME, ProfiloTable.GOAL_WEIGHT));
+		String sql2 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} TEXT NOT NULL,{3} BLOB NOT NULL,{4} TEXT NOT NULL ,{5} REAL NOT NULL ,{6} REAL NOT NULL, {7} INTEGER NOT NULL, {8} INTEGER NOT NULL, {9} INTEGER NOT NULL, {10} INTEGER NOT NULL, {11} INTEGER NOT NULL, {12} TEXT NOT NULL, {13} REAL, {14} INTEGER);";
+		db.execSQL(MessageFormat.format(sql2, ProfiloTable.TABLE_NAME, ProfiloTable._ID, ProfiloTable.EMAIL, ProfiloTable.PASSWORD, ProfiloTable.NICKNAME, ProfiloTable.HEIGHT, ProfiloTable.WEIGHT, ProfiloTable.DAY_OF_BIRHT, ProfiloTable.MONTH_OF_BIRHT, ProfiloTable.YEAR_OF_BIRHT, ProfiloTable.SEX, ProfiloTable.REMEMBER_ME, ProfiloTable.NOME, ProfiloTable.GOAL_WEIGHT, ProfiloTable.SCORE));
 	
 		
 		String sql3 = "CREATE TABLE IF NOT EXISTS {0} ({1} INTEGER PRIMARY KEY AUTOINCREMENT, {2} INTEGER NOT NULL,{3} TEXT NOT NULL,{4} REAL NOT NULL);";
@@ -81,22 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 	
 	}
 
-	protected void inserisciProvince(SQLiteDatabase db)
-	{
-		
-		
-		inserisciProvincia(db, "Agrigento", "AG");
-	}
-
-	private void inserisciProvincia(SQLiteDatabase db, String nome, String codice)
-	{
-		ContentValues v = new ContentValues();
-		v.put(ProvinciaTable.CODICE, codice);
-		v.put(ProvinciaTable.NOME, nome);
-		db.insert(ProvinciaTable.TABLE_NAME, null, v);
-	}
-
-	public void inserisciSfidaCorsa(int frequenza, int durata,int distanzaMinima, float vincita, float scommessa, int ID)
+		public void inserisciSfidaCorsa(int frequenza, int durata,int distanzaMinima, float vincita, float scommessa, int ID)
 	{
 	    float data=new Date().getTime();
 	    
@@ -133,11 +97,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
 	
 	
-	public void inserisciProfilo(String email, String password, String nickname, float height, float weight, int dayOfBirth, int monthOfBirth, int yearOfBirth, int sex, int remeberMe, String nome )
+	public void inserisciProfilo(String email, String password, String nickname, float height, float weight, int dayOfBirth, int monthOfBirth, int yearOfBirth, int sex, int remeberMe, String nome ) 
 	{
 		ContentValues v = new ContentValues();
 		v.put(ProfiloTable.EMAIL, email);
-		v.put(ProfiloTable.PASSWORD, password);
 		v.put(ProfiloTable.NICKNAME, nickname);
 		v.put(ProfiloTable.HEIGHT, height);
 		v.put(ProfiloTable.WEIGHT, weight);
@@ -147,6 +110,17 @@ public class DatabaseHelper extends SQLiteOpenHelper
 		v.put(ProfiloTable.SEX, sex);
 		v.put(ProfiloTable.REMEMBER_ME, remeberMe);
 		v.put(ProfiloTable.NOME, nome);
+		v.put(ProfiloTable.SCORE, 1000);
+  
+          SecretKey secret= crittografiaPassword.generateKey(nickname);
+        byte[] passwordBlob=  crittografiaPassword.encryptMsg(password, secret);
+        v.put(ProfiloTable.PASSWORD, passwordBlob);
+        
+       
+        
+        
+		
+		
 		getReadableDatabase().insert(ProfiloTable.TABLE_NAME, null, v);
 Cursor utente=getProfilo(nickname, password);
 int id= utente.getInt(utente.getColumnIndex(ProfiloTable._ID));
@@ -196,7 +170,7 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
     }
 
 	
-	public void setRememberMe(String username, String password, int remeberMe)
+	public void setRememberMe(String username, int remeberMe)
 	{
 		//Cursor user= getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, "NICKNAME = "+username+" AND PASSWORD = "+password , null,
 			//	null, null, null);
@@ -207,7 +181,8 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 		
 		v.put(ProfiloTable.REMEMBER_ME, remeberMe);
 		
-		getReadableDatabase().update(ProfiloTable.TABLE_NAME, v, ProfiloTable.NICKNAME+"=? and "+ProfiloTable.PASSWORD+"=?", new String[] { username, password });
+		getReadableDatabase().update(ProfiloTable.TABLE_NAME, v, ProfiloTable.NICKNAME+"=? OR "+ProfiloTable._ID+"=?", new String[] { username,username});
+	
 	}
 	
 	public boolean getRememberMe()
@@ -216,16 +191,18 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 		Cursor users = (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, null , null,
 					null, null, null));
 			try{
+				if(users.moveToFirst()){
 				
-				users.moveToFirst();
-			while(users.moveToNext())
+			do
 		{
-			if(users.getInt(11)==1)
+			if(users.getInt(users.getColumnIndex(ProfiloTable.REMEMBER_ME))==1)
 			{
+			  users.close();
 				return true;
 			}
+		}while((users.moveToNext()));
 		}
-		}
+			}
 		finally{
 		users.close();
 		}
@@ -234,12 +211,7 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 		return false;
 	}
 	
-	public Cursor getProvince()
-	{
-		return (getReadableDatabase().query(ProvinciaTable.TABLE_NAME, ProvinciaTable.COLUMNS, "length(" + ProvinciaTable.NOME + ") > 10", null,
-				null, null, ProvinciaTable.NOME));
-	}
-
+	
 	public Cursor getSfidaCorsa(int ID, int esito)
 	{
 	  
@@ -262,13 +234,28 @@ getReadableDatabase().insert(PesoTable.TABLE_NAME, null, v1);
 		//Cursor test= (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, ProfiloTable.NICKNAME +" = " +username+" AND "+ ProfiloTable.PASSWORD+" = "+password , null,
 	//			null, null, null));
 		
-		Cursor test= (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, ProfiloTable.NICKNAME+"=? and "+ProfiloTable.PASSWORD+"=?", new String[] { username, password },
+	 SecretKey secret= crittografiaPassword.generateKey(username);
+	// byte[] passwordBlob=crittografiaPassword.decryptMsg(cipherText, secret)
+	 
+	  
+		Cursor test= (getReadableDatabase().query( ProfiloTable.TABLE_NAME, ProfiloTable.COLUMNS, ProfiloTable.NICKNAME+"=?", new String[] { username },
 				null, null, null));
 		
-		test.moveToFirst();
+		if(test.moveToFirst())
+		{
+		
+		byte[] savedPasswordBlob=test.getBlob(test.getColumnIndex(ProfiloTable.PASSWORD));
+		
+		String savedPass=crittografiaPassword.decryptMsg(savedPasswordBlob, secret);
+		
+		if(savedPass.equals(password))
+		{
 		Log.d("test", "numero righe "+test.getCount() );
 		
 		return test;
+		}
+		}
+		  return null;
 	}
 	public Cursor getProfilo(int ID)
     {

@@ -227,7 +227,7 @@ public class LoginActivity extends Activity {
 			
 			
 		//	Log.d("debug", "saved" + savedNickname+" nick "+nickname+"saved P"+ savedPassword+"pas "+password);
-			
+			if(c!=null){
 			if(c.getCount()==1)
 			{
 				((TemporaryData) getApplication()).setID(c.getInt(c.getColumnIndex(ProfiloTable._ID)));
@@ -238,7 +238,7 @@ public class LoginActivity extends Activity {
 	    		
 				if(remeberMeCheckbox.isChecked())
 				{
-					databaseHelper.setRememberMe(nickname, password, 1);
+					databaseHelper.setRememberMe(nickname, 1);
 				}
 				//editor.putBoolean(getString(R.string.saved_Remember_me), remeberMe);
 	    	//	editor.commit();
@@ -247,6 +247,11 @@ public class LoginActivity extends Activity {
 	    		startActivity(mainActivity);
 	    		
 				return true;	
+			}
+			else
+	            
+	            
+	            return false;
 			}
 			else
 			
